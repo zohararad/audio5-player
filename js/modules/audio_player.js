@@ -14,7 +14,7 @@ define(['../util/mixin', '../util/pubsub'], function(mixin, pubsub) {
     _volume: 100, //audio volume
     _timer: null, //download interval timer
     state: null, //player state
-    events: ['play', 'pause', 'ended', 'canplay', 'playTimeUpdate'], //public player events
+    events: ['play', 'pause', 'volumechange', 'ended', 'canplay', 'playTimeUpdate'], //public player events
 
     /**
      * Initialize the AudioPlayer instance

@@ -70,6 +70,9 @@
             break;
         }
       },
+      onControlsVolumeChange: function(vol){
+        this.audioPlayer.volume(vol);
+      },
       /**
        * Dispatch onPlay event to controls when the audio is player.
        */
@@ -82,8 +85,19 @@
       onAudioPlayerPause: function(){
         this.controls.trigger('onPause');
       },
+      /**
+       * Dispatches onPlayTimeUpdate to controls whenever the audio play time changes.
+       * @param [Integer] position play time position (ms)
+       * @param [Integer] duration play time duration (ms)
+       */
       onAudioPlayerPlayTimeUpdate: function(position, duration){
         this.controls.trigger('onPlayTimeUpdate', position, duration);
+      },
+      /**
+       * Dispatches onVolumechange event to controls whenever the audio player's volume changes.
+       */
+      onAudioPlayerVolumechange: function(){
+        this.controls.trigger('onVolumechange', this.audioPlayer.volume());
       }
     }
 

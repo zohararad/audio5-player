@@ -11,8 +11,8 @@ define(['../util/mixin', '../util/pubsub', '../util/util'], function(mixin, pubs
   }
 
   Controls.prototype = {
-    events:[], // list of available events this class exposes
-    subscriptions: ['onPlay', 'onPause', 'onDownloadProgress', 'onPlayTimeUpdate'], //list of event subscriptions this class handles
+    events:['volumeChange'], // list of available events this class exposes
+    subscriptions: ['onPlay', 'onPause', 'onVolumechange', 'onDownloadProgress', 'onPlayTimeUpdate'], //list of event subscriptions this class handles
     dom:{ // dom elements cache
       buttons:{}, // cache of control buttons DOM elements
       ui: {} // cache of UI meta elements (duration, progress etc.)
@@ -42,6 +42,8 @@ define(['../util/mixin', '../util/pubsub', '../util/util'], function(mixin, pubs
         var elem = $(el), ui = elem.data('ui');
         this.dom.ui[ui] = elem;
       }.bind(this));
+
+      this.dom.ui.volume.on('click', this.onVolumeClick.bind(this));
     },
     /**
      * Handle click events on player control buttons
@@ -51,6 +53,17 @@ define(['../util/mixin', '../util/pubsub', '../util/util'], function(mixin, pubs
      */
     onControlsClick: function(action, btn, evt){
       this.trigger(action, btn);
+    },
+    /**
+     * Handle click events on volume element.
+     * Calculates new volume level and dispatches that value via a volumeChange event.
+     * @param [DOMEvent] evt click DOM event on volume UI element
+     */
+    onVolumeClick: function(evt){
+      var x = evt.offsetX;
+      var w = this.dom.ui.volume.width();
+      var vol = Math.ceil(x * 100 / w);
+      this.trigger('volumeChange', vol);
     },
     /**
      * onPlay event handler. Changes state of play/pause button to 'pause'
@@ -73,6 +86,17 @@ define(['../util/mixin', '../util/pubsub', '../util/util'], function(mixin, pubs
       var s = [util.getTimeFromMs(position), util.getTimeFromMs(duration)].join(' / ');
       this.dom.ui.duration.html(s);
       var progress = Math.ceil(position * 100 / duration); // playback progress in percent
+      this.dom.ui.progress.val(progress);
+    },
+    /**
+     * Handles volume change events sent from audio player.
+     * Updates the volume UI element with new volume value.
+     * @param [Integer] volume audio player volume level
+     */
+    onVolumechange: function(volume){
+      if(volume !== undefined){
+        this.dom.ui.volume.val(volume);
+      }
     }
   }
 
