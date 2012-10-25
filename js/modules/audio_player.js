@@ -14,13 +14,15 @@ define(['../util/mixin', '../util/pubsub'], function(mixin, pubsub) {
     _volume: 100, //audio volume
     _timer: null, //download interval timer
     state: null, //player state
-    events: ['play', 'pause', 'ended', 'durationchange', 'canplay', 'timeupdate'],
+    events: ['play', 'pause', 'ended', 'canplay', 'playTimeUpdate'], //public player events
 
     /**
      * Initialize the AudioPlayer instance
      */
     init: function(){
-      $.each(this.events, function(i, evt) {
+      var playerEvents = $.merge(['durationchange', 'timeupdate'], this.events);
+      playerEvents.splice(playerEvents.indexOf('playTimeUpdate'),1);
+      $.each(playerEvents, function(i, evt) {
         this.audio.addEventListener(evt, this.onPlayerEvent.bind(this), false);
       }.bind(this));
 
@@ -108,7 +110,7 @@ define(['../util/mixin', '../util/pubsub'], function(mixin, pubsub) {
      */
     onTimeUpdate: function(){
       if(this.audio.buffered.length > 0 && this.audio.duration > 0){
-        this.trigger('playTimeUpdate', this.audio.currentTime * 1000, this.audio.duration * 1000);
+        this.trigger('playTimeUpdate', parseInt(this.audio.currentTime * 1000), parseInt(this.audio.duration * 1000));
       }
     },
     /**

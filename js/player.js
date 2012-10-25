@@ -81,6 +81,9 @@
        */
       onAudioPlayerPause: function(){
         this.controls.trigger('onPause');
+      },
+      onAudioPlayerPlayTimeUpdate: function(position, duration){
+        this.controls.trigger('onPlayTimeUpdate', position, duration);
       }
     }
 
