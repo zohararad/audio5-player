@@ -13,6 +13,10 @@
     }
 
     Player.prototype = {
+      /**
+       * Initialize the Player instance
+       * @param [DOMElement] container DOM element containing player components
+       */
       init: function(container){
         this.$dom = {
           container: container,
@@ -24,26 +28,38 @@
 
         this.setupEventTriggers();
       },
+      /**
+       * Setup event triggers per component.
+       * Binds the public events each component exposes to handles on the Player instance.
+       * Events are bound by convention - on + ComponentName + EventName.
+       * For example, 'play' event on AudioPlayer will be bound to onAudioPlayerPlay
+       */
       setupEventTriggers: function(){
         $.each(this.audioPlayer.events, function(i, evt){
           var e = 'onAudioPlayer' + util.titlize(evt);
-          this.audioPlayer.on(evt, this.routeEvent.bind(this, e));
+          if(typeof(this[e]) === 'function'){
+            this.audioPlayer.on(evt, this[e], this);
+          }
         }.bind(this));
         $.each(this.controls.events, function(i, evt){
           var e = 'onControls' + util.titlize(evt);
-          this.controls.on(evt, this.routeEvent.bind(this, e));
+          if(typeof(this[e]) === 'function'){
+            this.controls.on(evt, this[e], this);
+          }
         }.bind(this));
       },
-      routeEvent: function(evt) {
-        if(typeof(this[evt]) === 'function'){
-          var args = Array.prototype.slice.call(arguments, 1);
-          this[evt].apply(this, args);
-        }
-      },
+      /**
+       * Load an audio file to the audio player
+       * @param [String] src source of audio to play
+       */
       loadAudio: function(src){
         this.audioPlayer.load(src);
       },
-      onControlsPlayPause: function(btn){
+      /**
+       * Handle controls play/pause event.
+       * Trigger play / pause on audio player according to its state
+       */
+      onControlsPlayPause: function(){
         switch(this.audioPlayer.state){
           case 'canplay':
           case 'pause':
@@ -54,9 +70,15 @@
             break;
         }
       },
+      /**
+       * Dispatch onPlay event to controls when the audio is player.
+       */
       onAudioPlayerPlay: function(){
         this.controls.trigger('onPlay');
       },
+      /**
+       * Dispatch onPause event to controls when the audio is paused.
+       */
       onAudioPlayerPause: function(){
         this.controls.trigger('onPause');
       }
@@ -66,18 +88,6 @@
 
     var player = new Player($('.player'));
     player.loadAudio('http://pod.icast.co.il/Media/Index/Files/331730-23-10-2012.mp3');
-    /**
-    audioPlayer.on('play', function(){
-      console.log('play start');
-    });
-    audioPlayer.on('playTimeUpdate', function(position, duration){
-      console.log(position, duration);
-    });
-    audioPlayer.on('downloadProgress', function(percent){
-      console.log(percent);
-    });
-
-    **/
   });
 
 })(jQuery, this);
