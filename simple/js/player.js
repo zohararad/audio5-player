@@ -12,10 +12,13 @@
       this.dom.container = container;
       this.dom.browse = container.find('input[type=file]');
       this.dom.audio = container.find('audio').get(0);
+      this.dom.playlist = container.find('.playlist');
+      this.DB = new DB('playlist', 'tracks', 1);
       this.setupEvents();
     },
     setupEvents: function(){
       this.dom.browse.on('change', this.onFilePick.bind(this));
+      this.dom.playlist.delegate('li','click',this.onTrackClick.bind(this));
     },
     onFilePick: function(evt){
       var files = evt.target.files; // FileList object
@@ -38,9 +41,20 @@
       reader.readAsDataURL(file);
     },
     fileReadComplete: function(index){
-      if(index === 0){
-        this.playFromList(index);
-      }
+      this.addToPlaylist(index);
+    },
+    addToPlaylist: function(index){
+      var f = this.fileList[index];
+      var li = $('<li class="track" data-index="'+index+'">'+f.name+'</li>');
+      li.appendTo(this.dom.playlist);
+      this.DB.create(f, function(){
+        console.log(arguments);
+      })
+    },
+    onTrackClick: function(evt){
+      var li = $(evt.target);
+      var index = parseInt(li.data('index'));
+      this.playFromList(index);
     },
     playFromList: function(index){
       var f = this.fileList[index];
