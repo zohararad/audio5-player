@@ -5,7 +5,7 @@ define(["../util/mixin", "../util/pubsub"], function(mixin, pubsub) {
     this.audio = new Audio();
     this.audio.preload = 'metadata';
     this.audio.autoplay = false;
-    this.state = 'ready';
+    this._state = 'ready';
 
     ['play', 'pause', 'ended', 'durationchange', 'canplay', 'timeupdate'].forEach(function(evt) {
       this.audio.addEventListener(evt, this.onPlayerEvent.bind(this), false);
@@ -16,17 +16,18 @@ define(["../util/mixin", "../util/pubsub"], function(mixin, pubsub) {
   };
 
   AudioPlayer.prototype = {
-    src: null, //audio source
-    volume: 100, //audio volume
-    timer: null, //download interval timer
-    state: null, //player state
+    _src: null, //audio source
+    _volume: 100, //audio volume
+    _timer: null, //download interval timer
+    _state: null, //player state
     /**
      * Load a new audio file into the player
      * @param [String] src source of the audio to play
      */
     load: function(src) {
-      this.audio.src = this.src = src;
-      this.timer = setInterval(this.checkDownloadProgress.bind(this), 500);
+      this.audio.src = this._src = src;
+      this.volume(this._volume);
+      this._timer = setInterval(this.checkDownloadProgress.bind(this), 500);
     },
     /**
      * Play current audio
@@ -58,6 +59,19 @@ define(["../util/mixin", "../util/pubsub"], function(mixin, pubsub) {
       this.play();
     },
     /**
+     * Get or set audio volume.
+     * @param [Integer] vol audio volume between 0 - 100
+     * @return [Integer] audio volume
+     */
+    volume: function(vol){
+      if(vol !== undefined && parseInt(vol) !== NaN){
+        this._volume = vol;
+        this.audio.volume = vol /  / 100;
+      } else if (vol === undefined){
+        return this._volume;
+      }
+    },
+    /**
      * Playback completion handler
      */
     complete: function(){
@@ -69,7 +83,7 @@ define(["../util/mixin", "../util/pubsub"], function(mixin, pubsub) {
      * @param [DOMEvent] evt DOM event triggered on the audio object
      */
     onPlayerEvent: function(evt){
-      this.state = evt.type;
+      this._state = evt.type;
       this.trigger(evt.type, this);
     },
     /**
@@ -97,9 +111,9 @@ define(["../util/mixin", "../util/pubsub"], function(mixin, pubsub) {
      * Clear periodical download progress timer
      */
     clearTimer: function(){
-      if(this.timer !== null){
-        clearInterval(this.timer);
-        this.timer = null;
+      if(this._timer !== null){
+        clearInterval(this._timer);
+        this._timer = null;
       }
     }
   };
