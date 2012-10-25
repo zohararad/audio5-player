@@ -5,7 +5,7 @@ define(["../util/mixin", "../util/pubsub"], function(mixin, pubsub) {
     this.audio = new Audio();
     this.audio.preload = 'metadata';
     this.audio.autoplay = false;
-    this._state = 'ready';
+    this.state = 'ready';
 
     ['play', 'pause', 'ended', 'durationchange', 'canplay', 'timeupdate'].forEach(function(evt) {
       this.audio.addEventListener(evt, this.onPlayerEvent.bind(this), false);
@@ -19,7 +19,7 @@ define(["../util/mixin", "../util/pubsub"], function(mixin, pubsub) {
     _src: null, //audio source
     _volume: 100, //audio volume
     _timer: null, //download interval timer
-    _state: null, //player state
+    state: null, //player state
     /**
      * Load a new audio file into the player
      * @param [String] src source of the audio to play
@@ -83,7 +83,7 @@ define(["../util/mixin", "../util/pubsub"], function(mixin, pubsub) {
      * @param [DOMEvent] evt DOM event triggered on the audio object
      */
     onPlayerEvent: function(evt){
-      this._state = evt.type;
+      this.state = evt.type;
       this.trigger(evt.type, this);
     },
     /**
