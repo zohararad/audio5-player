@@ -1,4 +1,4 @@
-define(["../util/mixin", "../util/pubsub"], function(mixin, pubsub) {
+define(['../util/mixin', '../util/pubsub'], function(mixin, pubsub) {
   "use strict";
 
   var AudioPlayer = function(){
@@ -6,13 +6,7 @@ define(["../util/mixin", "../util/pubsub"], function(mixin, pubsub) {
     this.audio.preload = 'metadata';
     this.audio.autoplay = false;
     this.state = 'ready';
-
-    ['play', 'pause', 'ended', 'durationchange', 'canplay', 'timeupdate'].forEach(function(evt) {
-      this.audio.addEventListener(evt, this.onPlayerEvent.bind(this), false);
-    }.bind(this));
-
-    this.on('timeupdate', this.onTimeUpdate.bind(this));
-    this.on('ended', this.complete.bind(this));
+    this.init();
   };
 
   AudioPlayer.prototype = {
@@ -20,6 +14,19 @@ define(["../util/mixin", "../util/pubsub"], function(mixin, pubsub) {
     _volume: 100, //audio volume
     _timer: null, //download interval timer
     state: null, //player state
+    events: ['play', 'pause', 'ended', 'durationchange', 'canplay', 'timeupdate'],
+
+    /**
+     * Initialize the AudioPlayer instance
+     */
+    init: function(){
+      $.each(this.events, function(i, evt) {
+        this.audio.addEventListener(evt, this.onPlayerEvent.bind(this), false);
+      }.bind(this));
+
+      this.on('timeupdate', this.onTimeUpdate, this);
+      this.on('ended', this.complete, this);
+    },
     /**
      * Load a new audio file into the player
      * @param [String] src source of the audio to play
@@ -66,7 +73,7 @@ define(["../util/mixin", "../util/pubsub"], function(mixin, pubsub) {
     volume: function(vol){
       if(vol !== undefined && parseInt(vol) !== NaN){
         this._volume = vol;
-        this.audio.volume = vol /  / 100;
+        this.audio.volume = vol / 100;
       } else if (vol === undefined){
         return this._volume;
       }
@@ -83,7 +90,16 @@ define(["../util/mixin", "../util/pubsub"], function(mixin, pubsub) {
      * @param [DOMEvent] evt DOM event triggered on the audio object
      */
     onPlayerEvent: function(evt){
-      this.state = evt.type;
+      switch(evt.type){
+        case 'timeupdate':
+          break;
+        case 'durationchange':
+          this.state = 'load';
+          break;
+        default:
+          this.state = evt.type;
+          break;
+      }
       this.trigger(evt.type, this);
     },
     /**
