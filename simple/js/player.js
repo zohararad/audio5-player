@@ -8,17 +8,20 @@
   Player.prototype = {
     dom:{},
     fileList: [],
+    existingFiles: [],
     init: function(container){
       this.dom.container = container;
-      this.dom.browse = container.find('input[type=file]');
-      this.dom.audio = container.find('audio').get(0);
-      this.dom.playlist = container.find('.playlist');
-      this.DB = new DB('playlist', 'tracks', 1);
-      this.setupEvents();
+      this.fs = new FS(this.setup.bind(this));
     },
-    setupEvents: function(){
+    setup: function(){
+      this.dom.browse = this.dom.container.find('input[type=file]');
+      this.dom.audio = this.dom.container.find('audio').get(0);
+      this.dom.playlist = this.dom.container.find('.playlist');
       this.dom.browse.on('change', this.onFilePick.bind(this));
       this.dom.playlist.delegate('li','click',this.onTrackClick.bind(this));
+      this.fs.all(function(results){
+        results.forEach(this.addFileEntry.bind(this));
+      }.bind(this));
     },
     onFilePick: function(evt){
       var files = evt.target.files; // FileList object
@@ -27,29 +30,21 @@
       }
     },
     handleFilePick: function(file, index){
-      var o = {
-        name: file.name,
-        size: parseFloat(file.size * 9.53674e-7).toFixed(2),
-        type: (file.type || 'n/a')
-      }
-      var reader = new FileReader();
-      reader.onload = function(e){
-        o.fileData = e.target.result;
-        this.fileList[index] = o;
-        this.fileReadComplete(index);
-      }.bind(this);
-      reader.readAsDataURL(file);
+      this.fs.write(file, function(fileEntry){
+        this.addFileEntry(fileEntry, index);
+      }.bind(this));
     },
-    fileReadComplete: function(index){
-      this.addToPlaylist(index);
+    addFileEntry: function(fileEntry, index){
+      if(this.existingFiles.indexOf(fileEntry.name) === -1){
+        this.fileList[index] = fileEntry;
+        this.addToPlaylist(index);
+        this.existingFiles.push(fileEntry.name);
+      }
     },
     addToPlaylist: function(index){
       var f = this.fileList[index];
       var li = $('<li class="track" data-index="'+index+'">'+f.name+'</li>');
       li.appendTo(this.dom.playlist);
-      this.DB.create(f, function(){
-        console.log(arguments);
-      })
     },
     onTrackClick: function(evt){
       var li = $(evt.target);
@@ -58,7 +53,7 @@
     },
     playFromList: function(index){
       var f = this.fileList[index];
-      this.dom.audio.src = f.fileData;
+      this.dom.audio.src = f.toURL();
       this.dom.audio.play();
     }
   }
