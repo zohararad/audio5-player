@@ -1,6 +1,104 @@
 (function($win, $){
   "use strict";
 
+  var Playlist = {
+    Model: function(){
+      this.init();
+    },
+    View:  function(container){
+      this.init(container);
+    }
+  }
+
+  Playlist.Model.prototype = {
+    fs:null,
+    records:[],
+    init: function(callback){
+      this.fs = new FS(this.fsReady.bind(this, callback));
+    },
+    fsReady: function(callback){
+      this.fs.all(this.onFilesRead.bind(this, callback));
+    },
+    onFilesRead: function(files, callback){
+      this.savedFiles = files;
+      this.parseSavedFile(callback);
+    },
+    parseSavedFile: function(callback){
+      if(this.savedFiles.length){
+        var fileEntry = this.savedFiles.shift();
+        this.addFileEntry(fileEntry, this.parseSavedFile.bind(this, callback));
+      } else {
+        callback();
+      }
+    },
+    addFileEntry: function(fileEntry, callback){
+      var that = this;
+      fileEntry.file(function(file){
+        var reader = new FileReader();
+
+        reader.onloadend = function(evt){
+          var id3 = that.getFileID3(evt.target.result);
+          var o = $.extend({file: fileEntry, name: fileEntry.name, url: fileEntry.toURL()}, id3);
+          that.records.push(o);
+          callback();
+        };
+
+        reader.readAsArrayBuffer(file);
+
+      });
+    },
+    saveFile: function(file, callback){
+      if(!this.entryExists(file.name)){
+        this.fs.write(file, this.onFileSave.bind(this, callback));
+      }
+    },
+    onFileSave: function(fileEntry, callback){
+      var that = this;
+      var f = function(){
+        that.addFileEntry(fileEntry, function(){
+          var entry = that.find(fileEntry.name);
+          callback(entry);
+        });
+      };
+      setTimeout(f, 5);
+    },
+    getFileID3: function(data){
+      var dv = new jDataView(data);
+
+      var o = {title: null, artist: null, album: null, year: null};
+
+      if (dv.getString(3, dv.byteLength - 128) == 'TAG') {
+        o.title = dv.getString(30, dv.tell());
+        o.artist = dv.getString(30, dv.tell());
+        o.album = dv.getString(30, dv.tell());
+        o.year = dv.getString(4, dv.tell());
+      }
+      return o;
+    },
+    find: function(name){
+      return this.records[this.getEntryIndex(name)];
+    },
+    all: function(callback){
+      callback(this.records);
+    },
+    getEntryIndex: function(name){
+      return $.indexOfMemberByAttr(this.records, 'name', name);
+    },
+    entryExists: function(name){
+      return this.getEntryIndex(name) > -1;
+    },
+    sort: function(field, dir, callback){
+      this.records.sort(function(a,b){
+        if(dir === 'asc'){
+          return a[field] > b[field] ? 1 : (a[field] < b[field] ? -1 : 0);
+        } else {
+          return b[field] > a[field] ? 1 : (b[field] < a[field] ? -1 : 0);
+        }
+      });
+      callback(this.records);
+    }
+  }
+
   var Player = function(container){
     this.init(container);
   }
