@@ -197,7 +197,7 @@
     },
     getTrackListItemHTML: function(f){
       var tds = [];
-      ['title', 'artist', 'album', 'year'].forEach(function(k){
+      ['title', 'artist', 'album', 'year', 'name'].forEach(function(k){
         tds.push('<td>' + (f[k] || '') +'</td>');
       });
       tds.push('<td><button type="button" data-action="remove" data-name="'+ f.name +'">Remove</button></td>');
