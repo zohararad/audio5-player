@@ -118,8 +118,8 @@
       this.dom.artist = $('#artist');
       this.dom.title = $('#title');
       this.dom.browse.on('change', this.onFilePick.bind(this));
-      this.dom.playlist.delegate('tr','click',this.onTrackClick.bind(this));
-      this.dom.playlist.delegate('button[data-action=remove]','click',this.onRemoveTrackClick.bind(this));
+      this.dom.playlist.on('click', 'tr', this.onTrackClick.bind(this));
+      this.dom.playlist.on('click', '[data-action=remove]', this.onRemoveTrackClick.bind(this));
       this.fs.all(function(results){
         results.forEach(function(fileEntry){
           if(this.getTrackIndex(fileEntry.name) === -1){
@@ -200,7 +200,7 @@
       ['title', 'artist', 'album', 'year'].forEach(function(k){
         tds.push('<td>' + (f[k] || '') +'</td>');
       });
-      tds.push('<td><button type="button" data-action="remove" data-name="'+ f.name +'">Remove</button></td>');
+      tds.push('<td><span tabindex="0" data-action="remove" data-name="'+ f.name +'">&#10008;</span></td>');
       return '<tr class="track" title="File name: ' + f.name + '" data-name="'+ f.name +'">' + tds.join('') + '</tr>';
     },
     onTrackClick: function(evt){
@@ -233,7 +233,7 @@
       this.dom.audio.src = f.file.toURL();
 
       // populate title with currently playing song details
-      $('hgroup').css('visibility', 'visible');
+
       this.dom.title.text(f.title || "(Unknown)");
       this.dom.artist.text(f.artist || "(Unknown)");
       if(!f.artist && !f.title) {

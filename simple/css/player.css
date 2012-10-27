@@ -5,8 +5,9 @@ body {
 }
 
 #player {
-    width: 800px;
-    max-width: 98%;
+    width: 70%;
+    min-width: 320px;
+    max-width: 1300px;
     margin: 35px auto 15px;
     padding-bottom: 5px;
     background: #f8f8f8;
@@ -22,7 +23,7 @@ header {
 }
 
 hgroup {
-    visibility: hidden;
+    height: 71px;
 }
 
 audio {
@@ -60,7 +61,7 @@ h1 span {
     box-shadow: 1px 1px 3px rgba(0,0,0,0.3);
     border-radius: 5px;
     color: #fff;
-    min-width: 170px;
+    min-width: 180px;
     text-align: center;
     width: 25%;
     line-height: 40px;
@@ -86,10 +87,37 @@ h1 span {
 
 
 .playlist {
-    width: 100%;
+    width: 97.5%;
     margin: 10px;
+    border: 1px solid #ccc;
+    background: #ddd; /* Actually visible only in the thead */
+    box-shadow: 1px 1px 2px 1px rgba(200,200,200,0.3);
+
+}
+
+.playlist thead th {
+    border-bottom: 1px solid #ccc;
 }
 
 .playlist th {
     text-align: left;
+    padding: 7px 5px;
+}
+
+.playlist td {
+    padding: 5px;
+}
+
+/* Remove column */
+.playlist td:last-child, .playlist th:last-child {
+    width: 20px;
+    text-align: center;
+}
+
+.playlist tbody {
+    background: #eee;
+}
+
+.playlist tbody tr:nth-child(even) {
+    background: #fafafa;
 }
