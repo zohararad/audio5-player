@@ -118,6 +118,14 @@ h1 span {
     cursor: pointer;
 }
 
+.playlist tbody tr {
+    transition: all 200ms ease-out;
+}
+
+.playlist tbody tr:hover {
+    background: #FEFFD6 !important;
+}
+
 .playlist tbody tr:nth-child(even) {
     background: #fafafa;
 }
