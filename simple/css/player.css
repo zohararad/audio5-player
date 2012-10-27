@@ -5,10 +5,10 @@ body {
 }
 
 #player {
-    width: 800px;
-    max-width: 98%;
+    width: 70%;
+    min-width: 320px;
+    max-width: 1300px;
     margin: 35px auto 15px;
-    padding-bottom: 5px;
     background: #f8f8f8;
     border-radius: 8px;
     box-shadow: 6px 7px 8px -3px rgba(0, 0, 0, 0.6);
@@ -17,24 +17,23 @@ body {
 header {
     background: rgb(76,76,76);
     background: linear-gradient(135deg,  rgba(76,76,76,1) 0%,rgba(89,89,89,1) 12%,rgba(102,102,102,1) 25%,rgba(71,71,71,1) 39%,rgba(44,44,44,1) 50%,rgba(0,0,0,1) 51%,rgba(17,17,17,1) 60%,rgba(43,43,43,1) 76%,rgba(28,28,28,1) 91%,rgba(19,19,19,1) 100%);
-    border-radius: 5px;
+    border-radius: 5px 0;
     margin-bottom: 30px;
 }
 
 hgroup {
-    visibility: hidden;
+    height: 85px;
+    text-align: center;
+}
+
+.audio {
+    text-align: center;
 }
 
 audio {
-    width: 100%;
-    transition: opacity 150ms ease-in;
-    opacity: 0.7;
+    width: 95%;
     position: relative;
-    top: 6px;
-}
-
-#player:hover audio {
-    opacity: 1;
+    top: -5px;
 }
 
 h1 {
@@ -47,19 +46,101 @@ h1 {
 
 h1 span {
     display: block;
+    line-height: 180%;
 }
 
 #artist {
     font-style: italic;
-    font-size: 18px;
+    font-size: 16px;
+}
+
+.browse {
+    position: relative;
+    background: rgb(76,76,76);
+    box-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+    border-radius: 5px;
+    color: #fff;
+    min-width: 180px;
+    text-align: center;
+    width: 25%;
+    line-height: 40px;
+    margin: 28px auto;
+    padding: 0 10px;
+    font-size: 14px;
+    transition: all 80ms ease-out;
+}
+
+.browse:hover {
+    transform: scale(1.4);
+}
+
+.browse input {
+    width: 100%;
+    opacity: 0;
+    height: 100%;
+    position: absolute;
+    left: 0;
+    top: 0;
+    cursor: pointer;
 }
 
 
 .playlist {
     width: 100%;
-    margin: 10px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    background: #ddd; /* Actually visible only in the thead */
+    border-top: 1px solid #CCC;
+
+}
+
+.playlist thead th {
+    border-bottom: 1px solid #ccc;
 }
 
 .playlist th {
     text-align: left;
+    padding: 7px 5px;
+}
+
+.playlist td {
+    padding: 5px;
+}
+
+/* Remove column */
+.playlist td:last-child, .playlist th:last-child {
+    width: 20px;
+    text-align: center;
+}
+
+.playlist tbody {
+    background: #eee;
+    cursor: pointer;
+}
+
+.playlist tbody tr {
+    transition: all 200ms ease-out;
+}
+
+.playlist tbody tr:hover {
+    background: #FEFFD6 !important;
+}
+
+.playlist tbody tr:nth-child(even) {
+    background: #fafafa;
+}
+
+.playlist span[data-action="remove"] {
+    display: block;
+    transition: all 80ms ease-out;
+}
+
+.playlist span[data-action="remove"]:hover {
+    transform: scale(1.5);
+}
+
+footer {
+    opacity: 0.2;
+    text-align: center;
+    padding: 20px 0 10px;
 }
