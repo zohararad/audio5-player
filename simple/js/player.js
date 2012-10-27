@@ -16,10 +16,10 @@
 
       this.dom.browse = this.dom.container.find('input[type=file]');
       this.dom.audio = this.dom.container.find('audio').get(0);
-      this.dom.playlist = this.dom.container.find('.playlist');
+      this.dom.playlist = this.dom.container.find('.playlist tbody');
       this.dom.browse.on('change', this.onFilePick.bind(this));
-      this.dom.playlist.delegate('li','click',this.onTrackClick.bind(this));
-      this.dom.playlist.delegate('span[data-action=remove]','click',this.onRemoveTrackClick.bind(this));
+      this.dom.playlist.delegate('tr','click',this.onTrackClick.bind(this));
+      this.dom.playlist.delegate('button[data-action=remove]','click',this.onRemoveTrackClick.bind(this));
       this.fs.all(function(results){
         results.forEach(function(fileEntry){
           if(this.getTrackIndex(fileEntry.name) === -1){
@@ -38,12 +38,16 @@
     handleFilePick: function(file){
       if(this.getTrackIndex(file.name) === -1){
         this.fs.write(file, function(fileEntry){
-          this.addFileEntry(fileEntry, this.addToPlaylist.bind(this, fileEntry));
+          setTimeout(function(){
+            this.addFileEntry(fileEntry, this.addToPlaylist.bind(this, fileEntry));
+          }.bind(this), 5);
         }.bind(this));
       }
     },
     addFileEntry: function(fileEntry, cb){
+      // see http://ericbidelman.tumblr.com/post/8343485440/reading-mp3-id3-tags-in-javascript for more info
       fileEntry.file(function(file){
+        console.log(fileEntry, file);
         var reader = new FileReader();
 
         reader.onloadend = function(evt) {
@@ -92,11 +96,19 @@
       }
     },
     getTrackListItemHTML: function(f){
-      return '<li class="track" data-name="'+ f.name +'">'+ [f.name, f.album, f.artist].join(' | ') +' <span data-action="remove" data-name="'+ f.name +'">x</span></li>';
+      var tds = [];
+      ['title', 'artist', 'album', 'year'].forEach(function(k){
+        tds.push('<td>'+f[k]+'</td>');
+      });
+      tds.push('<td><button type="button" data-action="remove" data-name="'+ f.name +'">Remove</button></td>');
+      return '<tr class="track" data-name="'+ f.name +'">' + tds.join('') + '</tr>';
     },
     onTrackClick: function(evt){
-      var li = $(evt.target);
-      var name = li.data('name');
+      var tr = $(evt.target);
+      if(tr.get('tag') !== 'TR'){
+        tr = tr.parents('tr');
+      }
+      var name = tr.data('name');
       var index = this.getTrackIndex(name);
       if(index > -1){
         this.playFromList(index);
@@ -113,7 +125,7 @@
     },
     onTrackRemove: function(index){
       var f = this.fileList[index];
-      this.dom.playlist.find('li[data-name="'+ f.name +'"]').remove();
+      this.dom.playlist.find('tr[data-name="'+ f.name +'"]').remove();
       this.fileList.splice(index, 1);
     },
     playFromList: function(index){
