@@ -1,3 +1,4 @@
+// see http://www.html5rocks.com/en/tutorials/file/filesystem/ for more
 (function($){
   "use strict";
 
@@ -6,6 +7,7 @@
   }
 
   window.requestFileSystem  = window.requestFileSystem || window.webkitRequestFileSystem;
+  window.resolveLocalFileSystemURL = window.resolveLocalFileSystemURL || window.webkitResolveLocalFileSystemURL;
 
   var FS = function(cb){
     window.webkitStorageInfo.requestQuota(
@@ -73,7 +75,10 @@
         dirReader.readEntries(function(results) {
           cb(toArray(results));
         });
-      }.bind(this))
+      }.bind(this));
+    },
+    remove: function(fileEntry, cb){
+      fileEntry.remove(cb, this.onFSError);
     }
   }
   window.FS = FS;

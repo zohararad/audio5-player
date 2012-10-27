@@ -19,6 +19,7 @@
       this.dom.playlist = this.dom.container.find('.playlist');
       this.dom.browse.on('change', this.onFilePick.bind(this));
       this.dom.playlist.delegate('li','click',this.onTrackClick.bind(this));
+      this.dom.playlist.delegate('span[data-action=remove]','click',this.onRemoveTrackClick.bind(this));
       this.fs.all(function(results){
         results.forEach(this.addFileEntry.bind(this));
       }.bind(this));
@@ -43,13 +44,25 @@
     },
     addToPlaylist: function(index){
       var f = this.fileList[index];
-      var li = $('<li class="track" data-index="'+index+'">'+f.name+'</li>');
+      var li = $('<li class="track" data-index="'+index+'">'+f.name+' <span data-action="remove" data-index="'+ index +'">x</span></li>');
       li.appendTo(this.dom.playlist);
     },
     onTrackClick: function(evt){
       var li = $(evt.target);
       var index = parseInt(li.data('index'));
       this.playFromList(index);
+    },
+    onRemoveTrackClick: function(evt){
+      evt.stopPropagation();
+      var s = $(evt.target);
+      var index = parseInt(s.data('index'));
+      this.fs.remove(this.fileList[index], this.onTrackRemove.bind(this, index));
+    },
+    onTrackRemove: function(index){
+      var li = this.dom.playlist.find('li[data-index='+index+']');
+      if(li){
+        li.remove();
+      }
     },
     playFromList: function(index){
       var f = this.fileList[index];
