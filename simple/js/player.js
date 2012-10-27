@@ -135,6 +135,16 @@
     },
     getTrackIndex: function(name){
       return $.indexOfMemberByAttr(this.fileList, 'name', name);
+    },
+    sortTracks: function(field, dir){
+      this.fileList.sort(function(a,b){
+        if(dir === 'asc'){
+          return a[field] > b[field] ? 1 : (a[field] < b[field] ? -1 : 0);
+        } else {
+          return b[field] > a[field] ? 1 : (b[field] < a[field] ? -1 : 0);
+        }
+      });
+      this.renderPlayList();
     }
   }
 
