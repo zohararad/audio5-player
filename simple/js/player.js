@@ -200,7 +200,7 @@
       ['title', 'artist', 'album', 'year'].forEach(function(k){
         tds.push('<td>' + (f[k] || '') +'</td>');
       });
-      tds.push('<td><span tabindex="0" data-action="remove" data-name="'+ f.name +'">&#10008;</span></td>');
+      tds.push('<td><span tabindex="0" data-action="remove" title="Remove this song" data-name="'+ f.name +'">&#10008;</span></td>');
       return '<tr class="track" title="File name: ' + f.name + '" data-name="'+ f.name +'">' + tds.join('') + '</tr>';
     },
     onTrackClick: function(evt){
