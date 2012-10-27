@@ -54,6 +54,36 @@ h1 span {
     font-size: 18px;
 }
 
+.browse {
+    position: relative;
+    background: rgb(76,76,76);
+    box-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+    border-radius: 5px;
+    color: #fff;
+    min-width: 170px;
+    text-align: center;
+    width: 25%;
+    line-height: 40px;
+    margin: 28px auto;
+    padding: 0 10px;
+    font-size: 14px;
+    transition: top 70ms ease-out;
+}
+
+.browse:hover {
+    top: 2px;
+}
+
+.browse input {
+    width: 100%;
+    opacity: 0;
+    height: 100%;
+    position: absolute;
+    left: 0;
+    top: 0;
+    cursor: pointer;
+}
+
 
 .playlist {
     width: 100%;
