@@ -73,7 +73,7 @@
       this.fs.root.getDirectory(this.rootDir, {create: true}, function(dirEntry) {
         var dirReader = dirEntry.createReader();
         dirReader.readEntries(function(results) {
-          cb(toArray(results));
+          cb($.toArray(results));
         });
       }.bind(this));
     },
