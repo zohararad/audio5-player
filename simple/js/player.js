@@ -197,11 +197,11 @@
     },
     getTrackListItemHTML: function(f){
       var tds = [];
-      ['title', 'artist', 'album', 'year', 'name'].forEach(function(k){
+      ['title', 'artist', 'album', 'year'].forEach(function(k){
         tds.push('<td>' + (f[k] || '') +'</td>');
       });
       tds.push('<td><button type="button" data-action="remove" data-name="'+ f.name +'">Remove</button></td>');
-      return '<tr class="track" data-name="'+ f.name +'">' + tds.join('') + '</tr>';
+      return '<tr class="track" title="File name: ' + f.name + '" data-name="'+ f.name +'">' + tds.join('') + '</tr>';
     },
     onTrackClick: function(evt){
       var tr = $(evt.target);
