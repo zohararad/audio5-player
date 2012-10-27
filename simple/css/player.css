@@ -3,6 +3,20 @@ body {
     line-height: 140%;
 }
 
+#player {
+    width: 800px;
+    max-width: 98%;
+    margin: 0 auto;
+}
+
 audio {
+    width: 100%;
+}
+
+header {
+    visibility: hidden;
+}
+
+table {
     width: 100%;
 }
