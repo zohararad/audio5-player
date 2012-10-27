@@ -65,7 +65,7 @@
     getFileID3: function(data){
       var dv = new jDataView(data);
 
-      var o = {title: null, artist: null, album: null, year: null};
+      var o = {};
 
       if (dv.getString(3, dv.byteLength - 128) == 'TAG') {
         o.title = dv.getString(30, dv.tell());
@@ -196,7 +196,7 @@
     getTrackListItemHTML: function(f){
       var tds = [];
       ['title', 'artist', 'album', 'year'].forEach(function(k){
-        tds.push('<td>'+f[k]+'</td>');
+        tds.push('<td>' + (f[k] || '') +'</td>');
       });
       tds.push('<td><button type="button" data-action="remove" data-name="'+ f.name +'">Remove</button></td>');
       return '<tr class="track" data-name="'+ f.name +'">' + tds.join('') + '</tr>';
