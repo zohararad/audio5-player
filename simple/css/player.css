@@ -1,0 +1,64 @@
+body {
+    background: #fafafa url(../images/low_contrast_linen.png);
+    font-family: sans-serif;
+    line-height: 140%;
+}
+
+#player {
+    width: 800px;
+    max-width: 98%;
+    margin: 35px auto 15px;
+    padding-bottom: 5px;
+    background: #f8f8f8;
+    border-radius: 8px;
+}
+
+header {
+    background: rgb(76,76,76);
+    background: linear-gradient(135deg,  rgba(76,76,76,1) 0%,rgba(89,89,89,1) 12%,rgba(102,102,102,1) 25%,rgba(71,71,71,1) 39%,rgba(44,44,44,1) 50%,rgba(0,0,0,1) 51%,rgba(17,17,17,1) 60%,rgba(43,43,43,1) 76%,rgba(28,28,28,1) 91%,rgba(19,19,19,1) 100%);
+    border-radius: 5px;
+    margin-bottom: 30px;
+}
+
+hgroup {
+    visibility: hidden;
+}
+
+audio {
+    width: 100%;
+    transition: opacity 150ms ease-in;
+    opacity: 0.7;
+    position: relative;
+    top: 6px;
+}
+
+#player:hover audio {
+    opacity: 1;
+}
+
+h1 {
+    line-height: 120%;
+    margin: 0;
+    padding: 12px;
+    color: #FFF;
+    font-size: 20px;
+}
+
+h1 span {
+    display: block;
+}
+
+#artist {
+    font-style: italic;
+    font-size: 18px;
+}
+
+
+.playlist {
+    width: 100%;
+    margin: 10px;
+}
+
+.playlist th {
+    text-align: left;
+}

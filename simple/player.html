@@ -2,18 +2,39 @@
 <html>
 <head>
   <title>Simple Audio5 Player</title>
+  <link rel="stylesheet" href="css/player.css">
+  <script src="js/libs/prefixfree.min.js" async></script>
 </head>
 <body>
   <div id="player">
-    <div class="audio">
-      <audio controls></audio>
-    </div>
+    <header>
+      <hgroup>
+        <h1><span id="title"></span><span id="artist"></span></h1>
+      </hgroup>
+      <div class="audio">
+        <audio controls></audio>
+      </div>
+    </header>
+
     <div class="browser">
       <input type="file" name="browse" multiple />
     </div>
-    <ul class="playlist"></ul>
+    <table class="playlist">
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th>Artist</th>
+          <th>Album</th>
+          <th>Year</th>
+          <th>&nbsp;</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
   </div>
-  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+  <script src="js/libs/jquery.min.js"></script>
+  <script src="js/util.js"></script>
+  <script src="js/libs/jdataview.js"></script>
   <script src="js/fs.js"></script>
   <script src="js/player.js"></script>
 </body>
