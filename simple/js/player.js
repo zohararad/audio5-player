@@ -116,7 +116,6 @@
       this.dom.audio = this.dom.container.find('audio').get(0);
       this.dom.playlist = this.dom.container.find('.playlist tbody');
       this.dom.artist = $('#artist');
-      this.dom.artistName = $('#artistName');
       this.dom.title = $('#title');
       this.dom.browse.on('change', this.onFilePick.bind(this));
       this.dom.playlist.delegate('tr','click',this.onTrackClick.bind(this));
@@ -234,9 +233,9 @@
       this.dom.audio.src = f.file.toURL();
 
       // populate title with currently playing song details
-      $('header').css('visibility', 'visible');
+      $('hgroup').css('visibility', 'visible');
       this.dom.title.text(f.title || "(Unknown)");
-      this.dom.artistName.text(f.artist || "(Unknown)");
+      this.dom.artist.text(f.artist || "(Unknown)");
       if(!f.artist && !f.title) {
           this.dom.title.text(f.name);
           this.dom.artist.hide();

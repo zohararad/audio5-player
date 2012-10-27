@@ -3,15 +3,19 @@
 <head>
   <title>Simple Audio5 Player</title>
   <link rel="stylesheet" href="css/player.css">
+  <script src="js/libs/prefixfree.min.js" async></script>
 </head>
 <body>
   <div id="player">
     <header>
-      <h1><span id="title"></span> <span id="artist"><em>by</em> <span id="artistName"></span></span></h1>
+      <hgroup>
+        <h1><span id="title"></span><span id="artist"></span></h1>
+      </hgroup>
+      <div class="audio">
+        <audio controls></audio>
+      </div>
     </header>
-    <div class="audio">
-      <audio controls></audio>
-    </div>
+
     <div class="browser">
       <input type="file" name="browse" multiple />
     </div>
