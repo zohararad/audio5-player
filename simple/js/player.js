@@ -1,16 +1,31 @@
 (function($win, $){
   "use strict";
 
-  var Playlist = {
-    Model: function(callback){
+  var Models = {
+    Playlist: function(callback){
       this.init(callback);
     },
-    View:  function(container){
+    Audio: function(container){
       this.init(container);
     }
   }
 
-  Playlist.Model.prototype = {
+  var Views = {
+    Playlist: function(container){
+      this.init(container);
+    },
+    Player: function(container){
+      this.init(container);
+    }
+  }
+
+  var Controllers = {
+    Player: function(container){
+      this.init(container);
+    }
+  }
+
+  Models.Playlist.prototype = {
     fs:null,
     records:[],
     init: function(callback){
@@ -108,7 +123,25 @@
     }
   }
 
-  Playlist.View.prototype = {
+  Models.Audio.prototype = {
+    init: function(container){
+      this.audio = container.find('audio').get(0);
+      this.audio.preload = 'metadata';
+      this.audio.autoplay = false;
+    },
+    load: function(url){
+      this.audio.src = url;
+      this.play();
+    },
+    play: function(){
+      this.audio.play();
+    },
+    pause: function(){
+      this.audio.pause();
+    }
+  }
+
+  Views.Playlist.prototype = {
     dom:{},
     init: function(playlist){
       this.dom.playlist = playlist;
@@ -137,51 +170,40 @@
     }
   }
 
-  var Player = {
-    Audio: function(container){
-      this.init(container);
-    },
-    View:  function(container){
-      this.init(container);
-    },
-    Controller: function(container){
-      this.init(container);
-    }
-  }
-
-  Player.Audio.prototype = {
-    init: function(container){
-      this.audio = container.find('audio').get(0);
-      this.audio.preload = 'metadata';
-      this.audio.autoplay = false;
-    },
-    load: function(url){
-      this.audio.src = url;
-      this.play();
-    },
-    play: function(){
-      this.audio.play();
-    },
-    pause: function(){
-      this.audio.pause();
-    }
-  }
-
-  Player.Controller.prototype = {
+  Views.Player.prototype = {
     dom:{},
+    init: function(container){
+      this.dom.title = container.find('#title');
+      this.dom.artist = container.find('#artist');
+    },
+    render: function(track){
+      var title = track.title || 'Unknown';
+      var artist = track.artist || 'Unknown';
+      this.dom.title.text(title);
+      this.dom.artist.text(title);
+    }
+  }
+
+  Controllers.Player.prototype = {
+    dom:{},
+    views:{
+      playlist:null,
+      player: null
+    },
     init: function(container){
       this.dom.container = container;
       this.dom.browse = this.dom.container.find('input[type=file]');
       this.dom.playlist = this.dom.container.find('.playlist tbody');
 
-      this.view = new Playlist.View(this.dom.playlist);
-      this.model = new Playlist.Model(this.render.bind(this));
-      this.audio = new Player.Audio(container);
+      this.views.playlist = new Views.Playlist(this.dom.playlist);
+      this.views.player = new Views.Player(container);
+      this.playlist = new Models.Playlist(this.render.bind(this));
+      this.audio = new Models.Audio(container);
     },
     render: function(){
       var that = this;
-      this.model.all(function(records){
-        that.view.render(records);
+      this.playlist.all(function(records){
+        that.views.playlist.render(records);
         that.bindEvents();
       });
     },
@@ -193,8 +215,8 @@
     onFilePick: function(evt){
       var that = this, files = evt.target.files;
       for (var i = 0, f; f = files[i]; i++) {
-        this.model.saveFile(f, function(fileEntry){
-          that.view.append(fileEntry);
+        this.playlist.saveFile(f, function(fileEntry){
+          that.views.playlist.append(fileEntry);
         });
       }
       evt.target.value = '';
@@ -205,19 +227,20 @@
         tr = tr.parents('tr');
       }
       var name = tr.data('name');
-      var track = this.model.find(name);
+      var track = this.playlist.find(name);
       this.audio.load(track.url);
+      this.views.player.render(track);
     },
     onRemoveTrackClick: function(evt){
       evt.stopPropagation();
       var s = $(evt.target);
       var name = s.data('name');
-      this.model.remove(name, this.onTrackRemove.bind(this));
+      this.playlist.remove(name, this.onTrackRemove.bind(this));
     },
     onTrackRemove: function(f){
-      this.view.remove(f.name);
+      this.views.playlist.remove(f.name);
     }
   }
 
-  $win.player = new Player.Controller($('#player'))
+  $win.player = new Controllers.Player($('#player'))
 })(this, jQuery);
