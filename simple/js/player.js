@@ -2,8 +2,8 @@
   "use strict";
 
   var Playlist = {
-    Model: function(){
-      this.init();
+    Model: function(callback){
+      this.init(callback);
     },
     View:  function(container){
       this.init(container);
@@ -19,7 +19,7 @@
     fsReady: function(callback){
       this.fs.all(this.onFilesRead.bind(this, callback));
     },
-    onFilesRead: function(files, callback){
+    onFilesRead: function(callback, files){
       this.savedFiles = files;
       this.parseSavedFile(callback);
     },
@@ -81,6 +81,14 @@
     all: function(callback){
       callback(this.records);
     },
+    remove: function(name, callback){
+      var that = this, r = this.find(name);
+      this.fs.remove(r.file, function(){
+        var i = that.getEntryIndex(name);
+        that.records.splice(i,1);
+        callback(r);
+      });
+    },
     getEntryIndex: function(name){
       return $.indexOfMemberByAttr(this.records, 'name', name);
     },
@@ -99,11 +107,88 @@
     }
   }
 
+  Playlist.View.prototype = {
+    dom:{},
+    init: function(playlist){
+      this.dom.playlist = playlist;
+    },
+    render: function(items){
+      var that = this, html = [];
+      items.forEach(function(item){
+        html.push(that.getItemHTML(item));
+      });
+      this.dom.playlist.html(html.join(''));
+    },
+    append: function(item){
+      var el = $(this.getItemHTML(item));
+      this.dom.playlist.append(el);
+    },
+    remove: function(name){
+      this.dom.playlist.find('tr[data-name="'+name+'"]').remove();
+    },
+    getItemHTML: function(item){
+      var tds = [];
+      ['title', 'artist', 'album', 'year'].forEach(function(k){
+        tds.push('<td>'+item[k]+'</td>');
+      });
+      tds.push('<td><button type="button" data-action="remove" data-name="'+ item.name +'">Remove</button></td>');
+      return '<tr class="track" data-name="'+ item.name +'">' + tds.join('') + '</tr>';
+    }
+  }
+
   var Player = function(container){
     this.init(container);
   }
 
   Player.prototype = {
+    dom:{},
+    init: function(container){
+      this.dom.container = container;
+      this.dom.browse = this.dom.container.find('input[type=file]');
+      this.dom.audio = this.dom.container.find('audio').get(0);
+      this.dom.playlist = this.dom.container.find('.playlist tbody');
+
+      this.view = new Playlist.View(this.dom.playlist);
+      this.model = new Playlist.Model(this.render.bind(this));
+    },
+    render: function(){
+      var that = this;
+      this.model.all(function(records){
+        that.view.render(records);
+        that.bindEvents();
+      });
+    },
+    bindEvents: function(){
+      this.dom.browse.on('change', this.onFilePick.bind(this));
+      this.dom.playlist.delegate('tr','click',this.onTrackClick.bind(this));
+      this.dom.playlist.delegate('button[data-action=remove]','click',this.onRemoveTrackClick.bind(this));
+    },
+    onFilePick: function(evt){
+      var that = this, files = evt.target.files;
+      for (var i = 0, f; f = files[i]; i++) {
+        this.model.saveFile(f, function(fileEntry){
+          that.view.append(fileEntry);
+        });
+      }
+      evt.target.value = '';
+    },
+    onTrackClick: function(){},
+    onRemoveTrackClick: function(evt){
+      evt.stopPropagation();
+      var s = $(evt.target);
+      var name = s.data('name');
+      this.model.remove(name, this.onTrackRemove.bind(this));
+    },
+    onTrackRemove: function(f){
+      this.view.remove(f.name);
+    }
+  }
+
+  var OldPlayer = function(container){
+    this.init(container);
+  }
+
+  OldPlayer.prototype = {
     dom:{},
     fileList: [],
     init: function(container){
