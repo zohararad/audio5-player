@@ -17,10 +17,11 @@
     /**
      * Audio player model
      * @param {DOMElement} container audio tag DOM container
+     * @param {Function} endedCallback callback to call when audio track playback ended
      * @constructor
      */
-    Audio: function(container){
-      this.init(container);
+    Audio: function(container, endedCallback){
+      this.init(container, endedCallback);
     }
   }
 
@@ -68,6 +69,7 @@
    */
   Models.Playlist.prototype = {
     fs:null, //file system util instance
+    cursor: 0,
     records:[], //collection of playable tracks
     /**
      * Initialize the playlist
@@ -178,6 +180,40 @@
       return this.records[this.getEntryIndex(name)];
     },
     /**
+     * Current record getter / setter
+     * @param {String} name name of track to set as current (optional, if called as setter)
+     * @return {Object} current record (if called as getter)
+     */
+    current: function(name){
+      if(name !== undefined){
+        this.cursor = this.getEntryIndex(name);
+      } else {
+        return this.records[this.cursor];
+      }
+    },
+    /**
+     * Iterate to next record in `this.records`
+     * @return {Object} next record
+     */
+    next: function(){
+      this.cursor += 1;
+      if(this.cursor >= this.records.length){
+        this.cursor = 0;
+      }
+      return this.current();
+    },
+    /**
+     * Iterate to previous record
+     * @return {Object} previous record
+     */
+    prev: function(){
+      this.cursor -= 1;
+      if(this.cursor < 0){
+        this.cursor = this.records.length - 1;
+      }
+      return this.current();
+    },
+    /**
      * Retrieve all records
      * @return {Array} array of existing records
      */
@@ -239,11 +275,13 @@
     /**
      * Initialize the model
      * @param {DOMElement} container audio element DOM container
+     * @param {Function} endedCallback callback to call when audio track playback ended
      */
-    init: function(container){
+    init: function(container, endedCallback){
       this.audio = container.find('audio').get(0);
       this.audio.preload = 'metadata';
       this.audio.autoplay = false;
+      this.audio.addEventListener('ended', endedCallback, false);
     },
     /**
      * Load an audio file to the audio element
@@ -369,7 +407,7 @@
       this.views.playlist = new Views.Playlist(this.dom.playlist);
       this.views.player = new Views.Player(container);
       this.playlist = new Models.Playlist(this.render.bind(this));
-      this.audio = new Models.Audio(container);
+      this.audio = new Models.Audio(container, this.onTrackEnded.bind(this));
     },
     /**
      * Render the player's playlist
@@ -412,6 +450,13 @@
       }
       var name = tr.data('name');
       var track = this.playlist.find(name);
+      this.playTrack(track);
+    },
+    /**
+     * Find a track by name in playlist and play it
+     * @param {Object} track track to play
+     */
+    playTrack: function(track){
       this.audio.load(track.url);
       this.views.player.render(track);
     },
@@ -432,6 +477,13 @@
      */
     onTrackRemove: function(f){
       this.views.playlist.remove(f.name);
+    },
+    /**
+     * Callback for audio 'ended' event. Finds next track in playlist and plays it.
+     */
+    onTrackEnded: function(){
+      var track = this.playlist.next();
+      this.playTrack(track);
     }
   }
 
