@@ -8,7 +8,7 @@
 
   /**
    * File System API Utility class
-   * @param [Function] cb callback function to run when file system API is ready
+   * @param {Function} cb callback function to run when file system API is ready
    * @constructor
    */
   var FS = function(cb){
@@ -25,8 +25,8 @@
     /**
      * Handler for quota grant event.
      * Requests file-system access once quota is granted
-     * @param [Function] cb callback function to run when file system API is ready
-     * @param [Integer] bytes granted quota in bytes
+     * @param {Function} cb callback function to run when file system API is ready
+     * @param {Number} bytes granted quota in bytes
      */
     onQuotaGranted: function(cb, bytes){
       window.requestFileSystem(
@@ -38,8 +38,8 @@
     },
     /**
      * Files sytem ready event handler
-     * @param [Function] cb callback function to run when file system API is ready
-     * @param [FileSystem] fs reference to file system object
+     * @param {Function} cb callback function to run when file system API is ready
+     * @param {FileSystem} fs reference to file system object
      */
     onFSReady: function(cb, fs){
       this.fs = fs;
@@ -47,7 +47,7 @@
     },
     /**
      * File system errors event handler
-     * @param [Error] err error object for file system error events
+     * @param {Error} err error object for file system error events
      */
     onFSError: function(err){
       var msg = '';
@@ -76,8 +76,8 @@
     },
     /**
      * Write file to file system
-     * @param [File] f file to write
-     * @param [Function] cb callback function to run when file has been successfully written
+     * @param {File} f file to write
+     * @param {Function} cb callback function to run when file has been successfully written
      */
     write: function(f, cb){
       var that = this;
@@ -93,7 +93,7 @@
     },
     /**
      * Get all file entries stored in `this.rootDir`
-     * @param [Function] cb callback function to run when all file entries have been read
+     * @param {Function} cb callback function to run when all file entries have been read
      */
     all: function(cb){
       this.fs.root.getDirectory(this.rootDir, {create: true}, function(dirEntry) {
@@ -105,8 +105,8 @@
     },
     /**
      * Remove a file from the file system
-     * @param [FileEntry] fileEntry file entry to remove
-     * @param [Function] cb callback function to run when file has been successfully removed
+     * @param {FileEntry} fileEntry file entry to remove
+     * @param {Function} cb callback function to run when file has been successfully removed
      */
     remove: function(fileEntry, cb){
       fileEntry.remove(cb, this.onFSError);
