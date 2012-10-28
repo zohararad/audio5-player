@@ -20,7 +20,6 @@
   FS.prototype = {
     rootDir: '/audio_files',
     onQuotaGranted: function(cb, bytes){
-      console.log('Quota Granted', cb, bytes);
       window.requestFileSystem(
         PERSISTENT,
         bytes,
@@ -29,7 +28,6 @@
       );
     },
     onFSReady: function(cb, fs){
-      console.log('FS Ready', fs);
       this.fs = fs;
       cb();
     },
