@@ -52,7 +52,7 @@
         this.fs.write(file, this.onFileSave.bind(this, callback));
       }
     },
-    onFileSave: function(fileEntry, callback){
+    onFileSave: function(callback, fileEntry){
       var that = this;
       var f = function(){
         that.addFileEntry(fileEntry, function(){
@@ -127,6 +127,7 @@
       this.dom.playlist.find('tr[data-name="'+name+'"]').remove();
     },
     getItemHTML: function(item){
+      console.log(item);
       var tds = [];
       ['title', 'artist', 'album', 'year'].forEach(function(k){
         tds.push('<td>'+item[k]+'</td>');
