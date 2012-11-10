@@ -13,5 +13,6 @@ input.addEventListener('change', function(event){
 }, false);
 
 range.addEventListener('change', function(event){
-  audio.playbackRate = event.target.value;
+  this.setAttribute('data-value', this.value);
+    audio.playbackRate = event.target.value;
 }, false)
