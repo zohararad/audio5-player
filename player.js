@@ -5,5 +5,5 @@ input.addEventListener('change', function(event){
 	reader.onload = function(){
 		console.log(arguments);
 	};
-	console.log(reader);
+	reader.readAsDataURL(file);
 }, false);
