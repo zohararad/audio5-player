@@ -1,3 +1,0 @@
-input[type=range]:after {
-    content: "x" attr(data-value);
-}
